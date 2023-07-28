@@ -15,12 +15,10 @@ namespace TTT
         public GameObject oPrefab;
 
         private int[] board = new int[9];
-        private List<GameObject> pieces = new List<GameObject>();
-        private int moves = 0;
-        private int[] score;
+        private bool[] cellClicked = new bool[9]; // To track if each cell has been clicked
+        private bool isPlayerTurn = true; // To track whether it's the player's turn or AI's turn
         public bool gameOver;
         private int currentPlayer = 1;
-        private Transform[] boxTransforms; // Array to store the transforms of the boxes
 
         private void Start()
         {
@@ -28,34 +26,13 @@ namespace TTT
             StartPlay();
         }
 
-        private void UpdateBoard()
-        {
-            for (int i = 0; i < 9; i++)
-            {
-                if (board[i] == 1)
-                {
-                    if (pieces[i] == null)
-                    {
-                        pieces[i] = Instantiate(xPrefab, GetPositionFromIndex(i), Quaternion.identity);
-                        pieces[i].transform.SetParent(transform); // Set the parent to the TicTacToe object
-                    }
-                }
-                else if (board[i] == -1)
-                {
-                    if (pieces[i] == null)
-                    {
-                        pieces[i] = Instantiate(oPrefab, GetPositionFromIndex(i), Quaternion.identity);
-                        pieces[i].transform.SetParent(transform); // Set the parent to the TicTacToe object
-                    }
-                }
-            }
-        }
-
         private Vector3 GetPositionFromIndex(int index)
         {
-            if (index >= 0 && index < pieces.Count && pieces[index] != null)
+            // Get the position from the CellMarker script attached to the respective cell
+            CellMarker cellMarker = GetCellMarker(index);
+            if (cellMarker != null)
             {
-                return pieces[index].GetComponent<CellMarker>().GetPositionFromBox();
+                return cellMarker.GetPositionFromBox();
             }
             else
             {
@@ -64,30 +41,51 @@ namespace TTT
             }
         }
 
+        private CellMarker GetCellMarker(int index)
+        {
+            // Ensure that the index is within the valid range of the cellClicked array
+            if (index >= 0 && index < cellClicked.Length)
+            {
+                GameObject cell = GameObject.Find("Cell" + (index + 1));
+                if (cell != null)
+                {
+                    // Try to get the CellMarker component attached to the cell GameObject
+                    CellMarker cellMarker = cell.GetComponent<CellMarker>();
+                    return cellMarker;
+                }
+            }
+
+            return null;
+        }
+
         private void ResetGame()
         {
-            // Clear the pieces list and reset the board
-            pieces.Clear();
-            for (int i = 0; i < 9; i++)
-            {
-                board[i] = 0;
-            }
+            // Clear the board and cellClicked array
+            Array.Clear(board, 0, board.Length);
+            Array.Clear(cellClicked, 0, cellClicked.Length);
             gameOver = false;
-            moves = 0;
             currentPlayer = 1;
         }
 
         private void StartPlay()
         {
-
             // Reset the game and display the initial board
             ResetGame();
+        }
 
-            // Instantiate the cells and assign their box transforms to the CellMarker script
-            CellMarker[] cellMarkers = FindObjectsOfType<CellMarker>();
-            for (int i = 0; i < cellMarkers.Length; i++)
+        public bool IsCellClickable(int index)
+        {
+            // Check if the cell is clickable (not occupied by X or O)
+            return !cellClicked[index];
+        }
+
+        public void OnCellClicked(int cellIndex)
+        {
+            if (!gameOver && isPlayerTurn && IsCellClickable(cellIndex))
             {
-                cellMarkers[i].ticTacToe = this;
+                cellClicked[cellIndex] = true; // Mark the cell as clicked
+                MakeMove(cellIndex);
+                isPlayerTurn = false; // Switch to AI's turn
             }
         }
 
@@ -96,7 +94,6 @@ namespace TTT
             if (!gameOver && board[index] == 0)
             {
                 board[index] = currentPlayer;
-                moves++;
                 InstantiatePiece(currentPlayer == 1 ? xPrefab : oPrefab, GetPositionFromIndex(index));
 
                 int winner = EvaluateBoard();
@@ -120,12 +117,12 @@ namespace TTT
         private void InstantiatePiece(GameObject prefab, Vector3 position)
         {
             GameObject piece = Instantiate(prefab, position, Quaternion.identity);
-            pieces.Add(piece);
         }
 
         private int EvaluateBoard()
         {
-            // evaluate board for winner or tie
+            // Evaluate board for winner or tie
+            // Your logic to check for a winner or tie should be implemented here
             return 0;
         }
 
@@ -139,20 +136,6 @@ namespace TTT
             // TODO: Implement logic to ask if the players want to replay or quit
         }
 
-        public bool IsCellClickable(int index)
-        {
-            // Check if the cell is clickable (not occupied by X or O)
-            return board[index] == 0;
-        }
-
-        public void OnCellClicked(int cellIndex)
-        {
-            if (!gameOver)
-            {
-                MakeMove(cellIndex);
-            }
-        }
-
         private void MakeAIMove()
         {
             int bestMove = TicTackToeAI.FindBestMove(board);
@@ -161,7 +144,7 @@ namespace TTT
             {
                 MakeMove(bestMove);
             }
-            else if (moves >= 9) // AI chose a move resulting in a tie
+            else if (!Array.Exists(cellClicked, clicked => !clicked)) // AI chose a move resulting in a tie
             {
                 gameOver = true;
                 PostResults(0);
