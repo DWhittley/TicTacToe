@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Xml.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -50,19 +53,24 @@ namespace TTT
 
         private Vector3 GetPositionFromIndex(int index)
         {
-            return pieces[index].GetComponent<CellMarker>().GetPositionFromBox();
+            if (index >= 0 && index < pieces.Count && pieces[index] != null)
+            {
+                return pieces[index].GetComponent<CellMarker>().GetPositionFromBox();
+            }
+            else
+            {
+                // Return a default position (you may want to adjust this based on your game's requirements)
+                return Vector3.zero;
+            }
         }
 
         private void ResetGame()
         {
+            // Clear the pieces list and reset the board
+            pieces.Clear();
             for (int i = 0; i < 9; i++)
             {
                 board[i] = 0;
-                if (pieces[i] != null)
-                {
-                    Destroy(pieces[i]);
-                    pieces[i] = null;
-                }
             }
             gameOver = false;
             moves = 0;
@@ -71,11 +79,6 @@ namespace TTT
 
         private void StartPlay()
         {
-            // initialize pieces list with nulls for each cell
-            for (int i = 0; i < 9; i++)
-            {
-                pieces.Add(null);
-            }
 
             // Reset the game and display the initial board
             ResetGame();
