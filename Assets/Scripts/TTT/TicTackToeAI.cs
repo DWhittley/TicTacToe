@@ -78,7 +78,7 @@ namespace TTT
         }
 
         // Function to evaluate the current state of the board and return the winner (1 for X, -1 for O, 0 for tie)
-        private static int EvaluateBoard(int[] board)
+        public static int EvaluateBoard(int[] board)
         {
             int[][] winConditions = new int[][]
             {

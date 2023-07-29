@@ -1,5 +1,5 @@
-using System;
 using UnityEngine;
+using System;
 
 namespace TTT
 {
@@ -7,10 +7,11 @@ namespace TTT
     {
         public GameObject xPrefab;
         public GameObject oPrefab;
+        public GameBox[] gameBoxes; // Array of GameBox instances
 
         private int[] board = new int[9];
-        private bool[] cellClicked = new bool[9]; // To track if each cell has been clicked
-        private bool isPlayerTurn = true; // To track whether it's the player's turn or AI's turn
+        private bool[] cellClicked = new bool[9];
+        private bool isPlayerTurn = true;
         public bool gameOver;
         private int currentPlayer = 1;
 
@@ -20,21 +21,14 @@ namespace TTT
             StartPlay();
         }
 
+        private void StartPlay()
+        {
+            ResetGame();
+        }
+
         private Vector3 GetPositionFromIndex(int index)
         {
-            // Get the individual box GameObject based on its name ("box1", "box2", ... "box9")
-            GameObject box = GameObject.Find("box" + (index + 1));
-
-            if (box != null)
-            {
-                // Return the transform position of the individual box
-                return box.transform.position;
-            }
-            else
-            {
-                // Return a default position (you may want to adjust this based on your game's requirements)
-                return Vector3.zero;
-            }
+            return gameBoxes[index].boxTransform.position;
         }
 
         private void ResetGame()
@@ -44,12 +38,6 @@ namespace TTT
             Array.Clear(cellClicked, 0, cellClicked.Length);
             gameOver = false;
             currentPlayer = 1;
-        }
-
-        private void StartPlay()
-        {
-            // Reset the game and display the initial board
-            ResetGame();
         }
 
         public bool IsCellClickable(int index)
@@ -75,7 +63,7 @@ namespace TTT
                 board[index] = currentPlayer;
                 InstantiatePiece(currentPlayer == 1 ? xPrefab : oPrefab, GetPositionFromIndex(index));
 
-                int winner = EvaluateBoard();
+                int winner = TicTackToeAI.EvaluateBoard(board);
                 if (winner != -1)
                 {
                     gameOver = true;
@@ -99,21 +87,26 @@ namespace TTT
             GameObject piece = Instantiate(prefab, position, Quaternion.identity);
         }
 
-        private int EvaluateBoard()
-        {
-            // Evaluate board for winner or tie
-            // Your logic to check for a winner or tie should be implemented here
-            return 0;
-        }
-
         private void PostResults(int winner)
         {
-            // TODO: Implement logic to display the game results
+            if (winner == 0)
+            {
+                // post game is a tie
+                return;
+            }
+            else
+            {
+                // post computer wins
+                return;
+            }
         }
 
         private void AskReplayOrQuit()
         {
-            // TODO: Implement logic to ask if the players want to replay or quit
+            // show text element "replay?"
+            // show buttons "replay" and "quit"
+            // if replay then StartPlay();
+            // if quit then end game.
         }
 
         private void MakeAIMove()

@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using UnityEngine;
 
@@ -20,8 +21,13 @@ namespace TTT
             if (!ticTacToe.gameOver && ticTacToe.IsCellClickable(boxNumber - 1))
             {
                 Debug.Log("Passing cell# " + (boxNumber - 1) + " to tictactoe");
-                Transform boxTransform = transform; // Get the clicked box's transform
-                ticTacToe.OnCellClicked(boxNumber - 1, boxTransform); // Pass the transform to TicTacToe
+                // Find the corresponding GameBox in the array
+                GameBox box = ticTacToe.gameBoxes.FirstOrDefault(b => b.boxNumber == boxNumber);
+                if (box != null)
+                {
+                    Transform boxTransform = box.boxTransform; // Get the clicked box's transform
+                    ticTacToe.OnCellClicked(box.boxNumber - 1, boxTransform); // Pass the transform to TicTacToe
+                }
             }
         }
     }
