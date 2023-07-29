@@ -1,11 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Xml.Linq;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 namespace TTT
 {
@@ -28,34 +22,19 @@ namespace TTT
 
         private Vector3 GetPositionFromIndex(int index)
         {
-            // Get the position from the CellMarker script attached to the respective cell
-            CellMarker cellMarker = GetCellMarker(index);
-            if (cellMarker != null)
+            // Get the individual box GameObject based on its name ("box1", "box2", ... "box9")
+            GameObject box = GameObject.Find("box" + (index + 1));
+
+            if (box != null)
             {
-                return cellMarker.GetPositionFromBox();
+                // Return the transform position of the individual box
+                return box.transform.position;
             }
             else
             {
                 // Return a default position (you may want to adjust this based on your game's requirements)
                 return Vector3.zero;
             }
-        }
-
-        private CellMarker GetCellMarker(int index)
-        {
-            // Ensure that the index is within the valid range of the cellClicked array
-            if (index >= 0 && index < cellClicked.Length)
-            {
-                GameObject cell = GameObject.Find("Cell" + (index + 1));
-                if (cell != null)
-                {
-                    // Try to get the CellMarker component attached to the cell GameObject
-                    CellMarker cellMarker = cell.GetComponent<CellMarker>();
-                    return cellMarker;
-                }
-            }
-
-            return null;
         }
 
         private void ResetGame()
@@ -79,23 +58,21 @@ namespace TTT
             return !cellClicked[index];
         }
 
-        public void OnCellClicked(int cellIndex)
+        public void OnCellClicked(int cellIndex, Transform boxTransform)
         {
             if (!gameOver && isPlayerTurn && IsCellClickable(cellIndex))
             {
                 cellClicked[cellIndex] = true; // Mark the cell as clicked
-                Debug.Log("cell index set to true");
                 isPlayerTurn = false; // Switch to AI's turn
-                MakeMove(cellIndex); 
+                MakeMove(cellIndex);
             }
         }
 
-        private void MakeMove(int index)
+        public void MakeMove(int index)
         {
             if (!gameOver && board[index] == 0)
             {
                 board[index] = currentPlayer;
-                Debug.Log("instantiating piece at index: " + board[index]);
                 InstantiatePiece(currentPlayer == 1 ? xPrefab : oPrefab, GetPositionFromIndex(index));
 
                 int winner = EvaluateBoard();
@@ -118,6 +95,7 @@ namespace TTT
 
         private void InstantiatePiece(GameObject prefab, Vector3 position)
         {
+            // Instantiate the new piece GameObject at the specified position
             GameObject piece = Instantiate(prefab, position, Quaternion.identity);
         }
 
