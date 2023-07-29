@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace TTT
 {
@@ -19,9 +20,11 @@ namespace TTT
 
         private void OnMouseDown()
         {
+            Debug.Log("Cell clicked");
             // Check if the cell is clickable (not occupied by X or O) and the game is still ongoing
             if (!ticTacToe.gameOver && ticTacToe.IsCellClickable(boxNumber - 1))
             {
+                Debug.Log("Passing cell# " + (boxNumber -1) + " to tictactoe");
                 ticTacToe.OnCellClicked(boxNumber - 1);
             }
         }

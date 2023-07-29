@@ -84,8 +84,9 @@ namespace TTT
             if (!gameOver && isPlayerTurn && IsCellClickable(cellIndex))
             {
                 cellClicked[cellIndex] = true; // Mark the cell as clicked
-                MakeMove(cellIndex);
+                Debug.Log("cell index set to true");
                 isPlayerTurn = false; // Switch to AI's turn
+                MakeMove(cellIndex); 
             }
         }
 
@@ -94,6 +95,7 @@ namespace TTT
             if (!gameOver && board[index] == 0)
             {
                 board[index] = currentPlayer;
+                Debug.Log("instantiating piece at index: " + board[index]);
                 InstantiatePiece(currentPlayer == 1 ? xPrefab : oPrefab, GetPositionFromIndex(index));
 
                 int winner = EvaluateBoard();
