@@ -16,7 +16,7 @@ namespace TTT
             int winner = EvaluateBoard(board);
             if (winner != 0 || depth == MaxDepth)
             {
-                return winner;
+                return winner == 1 ? 10 - depth : (winner == -1 ? depth - 10 : 0);
             }
 
             int bestScore;
@@ -55,6 +55,12 @@ namespace TTT
         // Function to find the best move for the AI using the Minimax algorithm
         public static int FindBestMove(int[] board)
         {
+            // Check if the center box is available and select it as the best move
+            if (board[4] == 0)
+            {
+                return 4;
+            }
+
             int bestScore = int.MinValue;
             int bestMove = -1;
 

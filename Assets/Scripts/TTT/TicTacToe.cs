@@ -116,6 +116,7 @@ namespace TTT
             if (bestMove != -1) // AI chose a valid move
             {
                 MakeMove(bestMove);
+                isPlayerTurn = true;
             }
             else if (!Array.Exists(cellClicked, clicked => !clicked)) // AI chose a move resulting in a tie
             {
