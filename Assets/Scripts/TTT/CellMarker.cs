@@ -16,13 +16,9 @@ namespace TTT
 
         private void OnMouseDown()
         {
-            Debug.Log("Cell clicked");
-            // Check if the cell is clickable (not occupied by X or O) and the game is still ongoing
-            if (!ticTacToe.gameOver && ticTacToe.IsCellClickable(boxNumber - 1))
+            if (!ticTacToe.gameOver && ticTacToe.IsCellClickable(boxNumber - 1)) // Check if cell is unoccupied and game is still ongoing
             {
-                Debug.Log("Passing cell# " + (boxNumber - 1) + " to tictactoe");
-                // Find the corresponding GameBox in the array
-                GameBox box = ticTacToe.gameBoxes.FirstOrDefault(b => b.boxNumber == boxNumber);
+                GameBox box = ticTacToe.gameBoxes.FirstOrDefault(b => b.boxNumber == boxNumber); // Find corresponding box in array
                 if (box != null)
                 {
                     Transform boxTransform = box.boxTransform; // Get the clicked box's transform

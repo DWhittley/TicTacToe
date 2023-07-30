@@ -1,5 +1,7 @@
 using UnityEngine;
 using System;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 namespace TTT
 {
@@ -8,6 +10,10 @@ namespace TTT
         public GameObject xPrefab;
         public GameObject oPrefab;
         public GameBox[] gameBoxes; // Array of GameBox instances
+        public GameObject resultPanel;    
+        public Text resultText;
+        public Button replayButton;
+        public Button quitButton;
 
         private int[] board = new int[9];
         private bool[] cellClicked = new bool[9];
@@ -18,6 +24,7 @@ namespace TTT
         private void Start()
         {
             gameOver = false;
+            resultPanel.SetActive(false);
             StartPlay();
         }
 
@@ -31,9 +38,8 @@ namespace TTT
             return gameBoxes[index].boxTransform.position;
         }
 
-        private void ResetGame()
+        private void ResetGame() // Clear the board and cellClicked array
         {
-            // Clear the board and cellClicked array
             Array.Clear(board, 0, board.Length);
             Array.Clear(cellClicked, 0, cellClicked.Length);
             gameOver = false;
@@ -42,8 +48,7 @@ namespace TTT
 
         public bool IsCellClickable(int index)
         {
-            // Check if the cell is clickable (not occupied by X or O)
-            return !cellClicked[index];
+            return !cellClicked[index]; // Check if the cell not occupied by X or O
         }
 
         public void OnCellClicked(int cellIndex, Transform boxTransform)
@@ -68,7 +73,6 @@ namespace TTT
                 {
                     gameOver = true;
                     PostResults(winner);
-                    AskReplayOrQuit();
                 }
                 else
                 {
@@ -83,30 +87,42 @@ namespace TTT
 
         private void InstantiatePiece(GameObject prefab, Vector3 position)
         {
-            // Instantiate the new piece GameObject at the specified position
-            GameObject piece = Instantiate(prefab, position, Quaternion.identity);
+            GameObject piece = Instantiate(prefab, position, Quaternion.identity); // Instantiate the new piece GameObject at the specified position
         }
 
         private void PostResults(int winner)
         {
+            string resultMessage;
             if (winner == 0)
             {
-                // post game is a tie
-                return;
+                resultMessage = "Tied that one!";
+            }
+            else if (winner == 1)
+            {
+                resultMessage = "You Win!";
             }
             else
             {
-                // post computer wins
-                return;
+                resultMessage = "Computer Won!";
             }
+
+            resultText.text = resultMessage;
+            resultPanel.SetActive(true);
+
+            replayButton.onClick.AddListener(OnReplayClicked); // listener for the replay and quit buttons
+            quitButton.onClick.AddListener(OnQuitClicked);
         }
 
-        private void AskReplayOrQuit()
+        private void OnReplayClicked()
         {
-            // show text element "replay?"
-            // show buttons "replay" and "quit"
-            // if replay then StartPlay();
-            // if quit then end game.
+            resultPanel.SetActive(false);
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
+        private void OnQuitClicked()
+        {
+            gameOver = true;
+            Application.Quit(); // Quit the application in standalone build
         }
 
         private void MakeAIMove()
@@ -122,7 +138,6 @@ namespace TTT
             {
                 gameOver = true;
                 PostResults(0);
-                AskReplayOrQuit();
             }
         }
     }

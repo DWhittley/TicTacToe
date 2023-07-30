@@ -10,7 +10,6 @@ namespace TTT
         private const int BoardSize = 3;
         private const int MaxDepth = 9; // Maximum depth for the Minimax algorithm
 
-        // Minimax function
         public static int Minimax(int[] board, int depth, int player)
         {
             int winner = EvaluateBoard(board);
@@ -52,15 +51,28 @@ namespace TTT
             return bestScore;
         }
 
-        // Function to find the best move for the AI using the Minimax algorithm
-        public static int FindBestMove(int[] board)
+        public static int FindBestMove(int[] board) // find best move for AI using Minimax algorithm
         {
-            // Check if the center box is available and select it as the best move
-            if (board[4] == 0)
+            if (board[4] == 0) // select center box if available and select it as best move
             {
                 return 4;
             }
+            // Check for a winning move for the AI
+            for (int i = 0; i < BoardSize * BoardSize; i++)
+            {
+                if (board[i] == 0)
+                {
+                    board[i] = 1;
+                    if (EvaluateBoard(board) == 1)
+                    {
+                        board[i] = 0; // Undo the move
+                        return i; // Return the winning move immediately
+                    }
+                    board[i] = 0; // Undo the move
+                }
+            }
 
+            // If there is no winning move, proceed with Minimax algorithm
             int bestScore = int.MinValue;
             int bestMove = -1;
 
@@ -80,11 +92,11 @@ namespace TTT
                 }
             }
 
+            // Return the best move based on Minimax algorithm
             return bestMove;
         }
 
-        // Function to evaluate the current state of the board and return the winner (1 for X, -1 for O, 0 for tie)
-        public static int EvaluateBoard(int[] board)
+        public static int EvaluateBoard(int[] board) // evaluate current state of board, return winner (1 for X, -1 for O, 0 for tie)
         {
             int[][] winConditions = new int[][]
             {

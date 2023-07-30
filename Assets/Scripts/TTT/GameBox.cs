@@ -7,7 +7,7 @@ public class GameBox: MonoBehaviour
 {
     public int boxNumber;
     public Transform boxTransform;
-    public GameObject boxObject; // Prefab for 'X' or 'O'
+    public GameObject boxObject; // establish object for Prefab instantiation
 
     public GameBox(int number, Transform transform)
     {
