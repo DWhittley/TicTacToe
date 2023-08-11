@@ -5,10 +5,12 @@ using UnityEngine;
 
 namespace TTT
 {
-    public class TicTackToeAI : MonoBehaviour
+    public class TicTackToeAI
     {
         private const int BoardSize = 3;
         private const int MaxDepth = 9; // Maximum depth for the Minimax algorithm
+        private int recursionScore;
+        private int optimalScoreButtonIndex = -1;
 
         public static int Minimax(int[] board, int depth, int player)
         {
@@ -57,13 +59,12 @@ namespace TTT
             {
                 return 4;
             }
-            // Check for a winning move for the AI
             for (int i = 0; i < BoardSize * BoardSize; i++)
             {
                 if (board[i] == 0)
                 {
-                    board[i] = 1;
-                    if (EvaluateBoard(board) == 1)
+                    board[i] = 2; // Try the AI's move
+                    if (EvaluateBoard(board) == 2) // Check if the AI wins with this move
                     {
                         board[i] = 0; // Undo the move
                         return i; // Return the winning move immediately
@@ -118,6 +119,8 @@ namespace TTT
 
                 if (board[a] != 0 && board[a] == board[b] && board[b] == board[c])
                 {
+                    Debug.Log($"Winning condition found at {a}, {b}, {c}");
+                    Debug.Log($"Board values: {board[a]}, {board[b]}, {board[c]}");
                     return board[a];
                 }
             }

@@ -7,6 +7,8 @@ namespace TTT
 {
     public class TicTacToe : MonoBehaviour
     {
+        private TicTackToeAI ticTacToeAI = new TicTackToeAI();
+
         public GameObject xPrefab;
         public GameObject oPrefab;
         public GameBox[] gameBoxes; // Array of GameBox instances
