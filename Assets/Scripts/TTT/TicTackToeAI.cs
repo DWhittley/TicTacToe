@@ -8,9 +8,7 @@ namespace TTT
     public class TicTackToeAI
     {
         private const int BoardSize = 3;
-        private const int MaxDepth = 9; // Maximum depth for the Minimax algorithm
-        private int recursionScore;
-        private int optimalScoreButtonIndex = -1;
+        private const int MaxDepth = 9; // Maximum depth for Minimax algorithm
 
         public static int Minimax(int[] board, int depth, int player)
         {
@@ -93,8 +91,7 @@ namespace TTT
                 }
             }
 
-            // Return the best move based on Minimax algorithm
-            return bestMove;
+            return bestMove; // Return the best move
         }
 
         public static int EvaluateBoard(int[] board) // evaluate current state of board, return winner (1 for X, -1 for O, 0 for tie)
